@@ -1,0 +1,183 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Primary Colors */
+    --primary: 217 91% 60%; /* Blue #3B82F6 */
+    --primary-foreground: 0 0% 100%; /* White */
+    --primary-dark: 217 91% 53%; /* Darker Blue #2563EB */
+    --primary-gradient-start: 225 100% 48%; /* Blue Gradient Start #1D4ED8 */
+    --primary-gradient-end: 217 91% 53%; /* Blue Gradient End #2563EB */
+
+    /* Functional Status Colors */
+    --success: 160 84% 39%; /* Green #10B981 */
+    --success-dark: 160 84% 32%; /* Darker Green #059669 */
+    --success-foreground: 0 0% 100%; /* White */
+
+    --warning: 43 96% 56%; /* Yellow/Orange #F59E0B */
+    --warning-dark: 39 100% 57%; /* Darker Orange #D97706 */
+    --warning-foreground: 0 0% 100%; /* White */
+
+    --destructive: 0 84% 60%; /* Red/Orange #EF4444 */
+    --destructive-dark: 0 84% 51%; /* Darker Red #DC2626 */
+    --destructive-foreground: 0 0% 100%; /* White */
+
+    /* User Type Colors */
+    --professional-writer: 258 90% 66%; /* Purple #8B5CF6 */
+    --professional-writer-dark: 258 90% 60%; /* Darker Purple */
+    --professional-writer-foreground: 0 0% 100%; /* White */
+
+    --officiant: 217 91% 60%; /* Blue #3B82F6 */
+    --officiant-foreground: 0 0% 100%; /* White */
+
+    /* Layout & Hierarchy Backgrounds */
+    --background: 210 100% 97%; /* Light Blue Gradient #F0F9FF */
+    --background-secondary: 199 89% 94%; /* Light Blue #E0F2FE */
+    --card: 0 0% 100%; /* White #FFFFFF */
+    --card-foreground: 220 39% 11%; /* Dark Gray #111827 */
+    --popover: 0 0% 100%; /* White */
+    --popover-foreground: 220 39% 11%; /* Dark Gray */
+
+    /* Secondary Backgrounds */
+    --secondary: 210 20% 96%; /* Light Gray #F9FAFB */
+    --secondary-alt: 214 20% 95%; /* Light Gray #F3F4F6 */
+    --secondary-foreground: 220 13% 18%; /* Medium Dark Gray #1F2937 */
+
+    /* Muted Colors */
+    --muted: 214 20% 95%; /* Light Gray #F3F4F6 */
+    --muted-foreground: 215 14% 42%; /* Medium Gray #6B7280 */
+
+    /* Text Hierarchy */
+    --text-primary: 220 39% 11%; /* Dark Gray #111827 */
+    --text-secondary: 220 13% 18%; /* Medium Dark Gray #1F2937 */
+    --text-meta: 215 14% 42%; /* Medium Gray #6B7280 */
+    --text-subtle: 210 14% 69%; /* Light Gray #9CA3AF */
+
+    /* Foreground Colors */
+    --foreground: 220 39% 11%; /* Dark Gray #111827 */
+
+    /* Accents & Creative */
+    --accent: 258 90% 66%; /* Purple #8B5CF6 */
+    --accent-foreground: 0 0% 100%; /* White */
+    --marketplace: 258 90% 66%; /* Purple #8B5CF6 */
+    --marketplace-foreground: 0 0% 100%; /* White */
+
+    /* Borders */
+    --border: 214 91% 87%; /* Light Blue #DBEAFE */
+    --border-alt: 209 100% 84%; /* Light Blue Alt #BFDBFE */
+    --border-active: 217 91% 60%; /* Active Blue #3B82F6 */
+    --input: 214 91% 87%; /* Light Blue #DBEAFE */
+    --ring: 217 91% 60%; /* Blue #3B82F6 */
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 215 16% 17%;
+    --foreground: 0 0% 100%;
+    --card: 215 16% 22%;
+    --card-foreground: 0 0% 100%;
+    --popover: 215 16% 22%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215 16% 30%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 215 16% 30%;
+    --muted-foreground: 215 10% 64%;
+    --accent: 258 90% 66%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 16% 30%;
+    --input: 215 16% 30%;
+    --ring: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* New Color Utility Classes */
+.primary-gradient {
+  background: linear-gradient(135deg, hsl(var(--primary-gradient-start)), hsl(var(--primary-gradient-end)));
+}
+
+.background-gradient {
+  background: linear-gradient(135deg, hsl(var(--background)), hsl(var(--background-secondary)));
+}
+
+/* Status Colors */
+.success {
+  background-color: hsl(var(--success));
+  color: hsl(var(--success-foreground));
+}
+
+.success:hover {
+  background-color: hsl(var(--success-dark));
+}
+
+.warning {
+  background-color: hsl(var(--warning));
+  color: hsl(var(--warning-foreground));
+}
+
+.warning:hover {
+  background-color: hsl(var(--warning-dark));
+}
+
+.destructive {
+  background-color: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+}
+
+.destructive:hover {
+  background-color: hsl(var(--destructive-dark));
+}
+
+/* User Type Colors */
+.professional-writer {
+  background-color: hsl(var(--professional-writer));
+  color: hsl(var(--professional-writer-foreground));
+}
+
+.professional-writer:hover {
+  background-color: hsl(var(--professional-writer-dark));
+}
+
+.officiant {
+  background-color: hsl(var(--officiant));
+  color: hsl(var(--officiant-foreground));
+}
+
+/* Marketplace & Creative */
+.marketplace {
+  background-color: hsl(var(--marketplace));
+  color: hsl(var(--marketplace-foreground));
+}
+
+/* LGBTQ Ceremony Type */
+.lgbtq {
+  background-color: hsl(var(--professional-writer));
+  color: hsl(var(--professional-writer-foreground));
+}
+
+.lgbtq:hover {
+  background-color: hsl(var(--professional-writer-dark));
+}
+
+/* Border Utilities */
+.border-active {
+  border-color: hsl(var(--border-active));
+}
+
+.border-light {
+  border-color: hsl(var(--border-alt));
+}
