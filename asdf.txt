@@ -1,0 +1,205 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Try the new cross-platform PowerShell https://aka.ms/pscore6
+
+PS C:\Users\fragu\OneDrive\Desktop\ordained-pro-portal> cd C:\Users\fragu\OneDrive\Desktop\ordained-pro-portal
+PS C:\Users\fragu\OneDrive\Desktop\ordained-pro-portal> npm.cmd run dev
+
+> nextjs-shadcn@0.1.0 dev
+> next dev -H 0.0.0.0
+
+   ▲ Next.js 15.3.6
+   - Local:        http://localhost:3000
+   - Network:      http://0.0.0.0:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 3.3s
+ ✓ Compiled /middleware in 401ms (108 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 9.6s (3795 modules)
+ ⨯ [TypeError: localStorage.getItem is not a function] {
+  digest: '1899537229'
+}
+[TypeError: localStorage.getItem is not a function]
+ ⨯ [TypeError: localStorage.getItem is not a function] { page: '/' }
+(node:8168) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 3.7s (4112 modules)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+    at Document.getInitialProps (..\..\src\pages\_document.tsx:1197:15)
+  1195 |    */
+  1196 |   static getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
+> 1197 |     return ctx.defaultGetInitialProps(ctx)
+       |               ^
+  1198 |   }
+  1199 |
+  1200 |   render() {
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+    at Document.getInitialProps (..\..\src\pages\_document.tsx:1197:15)
+  1195 |    */
+  1196 |   static getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
+> 1197 |     return ctx.defaultGetInitialProps(ctx)
+       |               ^
+  1198 |   }
+  1199 |
+  1200 |   render() {
+ ⨯ TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+    at Document.getInitialProps (..\..\src\pages\_document.tsx:1197:15)
+  1195 |    */
+  1196 |   static getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
+> 1197 |     return ctx.defaultGetInitialProps(ctx)
+       |               ^
+  1198 |   }
+  1199 |
+  1200 |   render() {
+ ⨯ TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+    at Document.getInitialProps (..\..\src\pages\_document.tsx:1197:15)
+  1195 |    */
+  1196 |   static getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
+> 1197 |     return ctx.defaultGetInitialProps(ctx)
+       |               ^
+  1198 |   }
+  1199 |
+  1200 |   render() {
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+    at Document.getInitialProps (..\..\src\pages\_document.tsx:1197:15)
+  1195 |    */
+  1196 |   static getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
+> 1197 |     return ctx.defaultGetInitialProps(ctx)
+       |               ^
+  1198 |   }
+  1199 |
+  1200 |   render() {
+ ⨯ unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+    at Document.getInitialProps (..\..\src\pages\_document.tsx:1197:15)
+  1195 |    */
+  1196 |   static getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
+> 1197 |     return ctx.defaultGetInitialProps(ctx)
+       |               ^
+  1198 |   }
+  1199 |
+  1200 |   render() {
+ ⨯ unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+    at Document.getInitialProps (..\..\src\pages\_document.tsx:1197:15)
+  1195 |    */
+  1196 |   static getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
+> 1197 |     return ctx.defaultGetInitialProps(ctx)
+       |               ^
+  1198 |   }
+  1199 |
+  1200 |   render() {
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ⨯ TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+[TypeError: localStorage.getItem is not a function] { page: '/' }
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ⨯ unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ⨯ unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ GET / 500 in 16799ms
+ GET / 500 in 298ms
+ ⨯ [TypeError: localStorage.getItem is not a function] {
+  digest: '1899537229'
+}
+[TypeError: localStorage.getItem is not a function]
+ ⨯ [TypeError: localStorage.getItem is not a function] { page: '/' }
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+    at Document.getInitialProps (..\..\src\pages\_document.tsx:1197:15)
+  1195 |    */
+  1196 |   static getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
+> 1197 |     return ctx.defaultGetInitialProps(ctx)
+       |               ^
+  1198 |   }
+  1199 |
+  1200 |   render() {
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+    at Document.getInitialProps (..\..\src\pages\_document.tsx:1197:15)
+  1195 |    */
+  1196 |   static getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
+> 1197 |     return ctx.defaultGetInitialProps(ctx)
+       |               ^
+  1198 |   }
+  1199 |
+  1200 |   render() {
+ ⨯ TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+    at Document.getInitialProps (..\..\src\pages\_document.tsx:1197:15)
+  1195 |    */
+  1196 |   static getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
+> 1197 |     return ctx.defaultGetInitialProps(ctx)
+       |               ^
+  1198 |   }
+  1199 |
+  1200 |   render() {
+ ⨯ TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+    at Document.getInitialProps (..\..\src\pages\_document.tsx:1197:15)
+  1195 |    */
+  1196 |   static getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
+> 1197 |     return ctx.defaultGetInitialProps(ctx)
+       |               ^
+  1198 |   }
+  1199 |
+  1200 |   render() {
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+    at Document.getInitialProps (..\..\src\pages\_document.tsx:1197:15)
+  1195 |    */
+  1196 |   static getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
+> 1197 |     return ctx.defaultGetInitialProps(ctx)
+       |               ^
+  1198 |   }
+  1199 |
+  1200 |   render() {
+ ⨯ unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+    at Document.getInitialProps (..\..\src\pages\_document.tsx:1197:15)
+  1195 |    */
+  1196 |   static getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
+> 1197 |     return ctx.defaultGetInitialProps(ctx)
+       |               ^
+  1198 |   }
+  1199 |
+  1200 |   render() {
+ ⨯ unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+    at Document.getInitialProps (..\..\src\pages\_document.tsx:1197:15)
+  1195 |    */
+  1196 |   static getInitialProps(ctx: DocumentContext): Promise<DocumentInitialProps> {
+> 1197 |     return ctx.defaultGetInitialProps(ctx)
+       |               ^
+  1198 |   }
+  1199 |
+  1200 |   render() {
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ⨯ TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+[TypeError: localStorage.getItem is not a function] { page: '/' }
+TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ⨯ unhandledRejection: TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ ⨯ unhandledRejection:  TypeError: localStorage.getItem is not a function
+    at new Promise (<anonymous>)
+ GET / 500 in 2886ms
+ GET / 500 in 298ms
