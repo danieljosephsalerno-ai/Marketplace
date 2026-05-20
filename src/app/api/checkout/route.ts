@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     // Initialize Stripe with the secret key
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
-    const { items, userId } = await request.json() as { items: CartItem[], userId: string }
+    const { items, userId, buyerLicenseAccepted } = await request.json() as { items: CartItem[], userId?: string, buyerLicenseAccepted?: boolean }
 
     console.log('Checkout request received:', { itemCount: items?.length, userId })
 
@@ -34,8 +34,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No items in cart' }, { status: 400 })
     }
 
-    if (!userId) {
-      return NextResponse.json({ error: 'User not authenticated' }, { status: 401 })
+    if (!buyerLicenseAccepted) {
+      return NextResponse.json({ error: 'Please accept the Buyer License Agreement and Refund Policy before checkout.' }, { status: 400 })
     }
 
     // Create line items for Stripe
@@ -62,11 +62,14 @@ export async function POST(request: NextRequest) {
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${origin}?purchase=success&session_id={CHECKOUT_SESSION_ID}`,
+      customer_creation: 'always',
+      success_url: `${origin}/purchase/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}?purchase=cancelled`,
       metadata: {
-        userId: userId,
+        buyerUserId: userId || '',
         scriptIds: JSON.stringify(items.map(item => item.id)),
+        buyerLicenseAccepted: 'true',
+        legalVersion: '1.0-placeholder',
       },
     })
 

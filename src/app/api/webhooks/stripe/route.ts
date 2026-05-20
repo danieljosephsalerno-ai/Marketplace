@@ -75,10 +75,10 @@ async function handleStripeEvent(event: Stripe.Event) {
 }
 
 async function handleSuccessfulPayment(session: Stripe.Checkout.Session) {
-  const userId = session.metadata?.userId
+  const userId = session.metadata?.buyerUserId || session.metadata?.userId
   const scriptIdsJson = session.metadata?.scriptIds
 
-  if (!userId || !scriptIdsJson) {
+  if (!scriptIdsJson) {
     console.error('Missing metadata in checkout session')
     return
   }
@@ -87,6 +87,11 @@ async function handleSuccessfulPayment(session: Stripe.Checkout.Session) {
     const supabase = getSupabase()
     const scriptIds = JSON.parse(scriptIdsJson) as string[]
     const amountTotal = session.amount_total ? session.amount_total / 100 : 0
+
+    if (!userId) {
+      console.log(`Guest checkout completed for ${scriptIds.length} script(s). Stripe session: ${session.id}`)
+      return
+    }
 
     // Record each purchase in the database
     for (const scriptId of scriptIds) {

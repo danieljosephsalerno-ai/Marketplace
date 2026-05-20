@@ -48,6 +48,42 @@ interface AuthProviderProps {
   children: ReactNode
 }
 
+type ProfileRecord = {
+  id?: string
+  user_id?: string
+  name?: string | null
+  full_name?: string | null
+  first_name?: string | null
+  last_name?: string | null
+  business_name?: string | null
+  user_type?: UserType | null
+  email?: string | null
+  location?: string | null
+  city?: string | null
+  state?: string | null
+  bio?: string | null
+  wedding_date?: string | null
+  partner?: string | null
+  partner_name?: string | null
+  avatar_url?: string | null
+  headshot_url?: string | null
+}
+
+const getEmailHandle = (email?: string | null) => email?.split('@')[0] || 'User'
+
+const getProfileName = (profile: ProfileRecord | null, supabaseUser: SupabaseUser) => {
+  const firstLast = [profile?.first_name, profile?.last_name].filter(Boolean).join(' ').trim()
+
+  return (
+    profile?.full_name ||
+    profile?.name ||
+    firstLast ||
+    supabaseUser.user_metadata?.full_name ||
+    supabaseUser.user_metadata?.name ||
+    getEmailHandle(supabaseUser.email)
+  )
+}
+
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -132,28 +168,57 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       console.log('Loading user data for:', supabaseUser.email)
 
-      // Get user profile - handle case where profile doesn't exist
-      const { data: profile, error: profileError } = await supabase
+      let profile: ProfileRecord | null = null
+
+      // The officiant portal stores profiles by user_id. Older marketplace data
+      // used id, so support both while the two apps share the same database.
+      const { data: portalProfile, error: portalProfileError } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', supabaseUser.id)
-        .single()
+        .eq('user_id', supabaseUser.id)
+        .maybeSingle()
+
+      if (portalProfile) {
+        profile = portalProfile
+      } else if (portalProfileError && portalProfileError.code !== 'PGRST116') {
+        console.log('Portal profile lookup error:', portalProfileError.message)
+      }
+
+      if (!profile) {
+        const { data: legacyProfile, error: legacyProfileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', supabaseUser.id)
+          .maybeSingle()
+
+        if (legacyProfile) {
+          profile = legacyProfile
+        } else if (legacyProfileError && legacyProfileError.code !== 'PGRST116') {
+          console.log('Legacy profile lookup error:', legacyProfileError.message)
+        }
+      }
 
       // If profile doesn't exist, create a basic one
-      if (profileError) {
-        console.log('Profile not found or error:', profileError.message)
+      if (!profile) {
+        console.log('Profile not found. Creating shared portal profile for user.')
+        const fallbackName = getProfileName(null, supabaseUser)
+        const newProfile = {
+          user_id: supabaseUser.id,
+          full_name: fallbackName,
+          email: supabaseUser.email,
+          user_type: supabaseUser.user_metadata?.user_type || 'guest',
+        }
 
-        // Check if it's a "not found" error - create a profile
-        if (profileError.code === 'PGRST116' || profileError.message.includes('not found')) {
-          console.log('Creating new profile for user')
-          const newProfile = {
-            id: supabaseUser.id,
-            name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'User',
-            user_type: supabaseUser.user_metadata?.user_type || 'guest',
-            email: supabaseUser.email,
-          }
+        const { data: createdProfile, error: createProfileError } = await supabase
+          .from('profiles')
+          .upsert(newProfile, { onConflict: 'user_id' })
+          .select('*')
+          .maybeSingle()
 
-          await supabase.from('profiles').upsert(newProfile)
+        if (createdProfile) {
+          profile = createdProfile
+        } else if (createProfileError) {
+          console.log('Unable to create shared profile:', createProfileError.message)
         }
       }
 
@@ -171,14 +236,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       const userData: User = {
         id: supabaseUser.id,
-        name: profile?.name || supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'User',
+        name: getProfileName(profile, supabaseUser),
         email: supabaseUser.email!,
         userType: profile?.user_type || supabaseUser.user_metadata?.user_type || 'guest',
-        location: profile?.location,
-        bio: profile?.bio,
-        weddingDate: profile?.wedding_date,
-        partner: profile?.partner,
-        avatar: profile?.avatar_url,
+        location: profile?.location || [profile?.city, profile?.state].filter(Boolean).join(', ') || undefined,
+        bio: profile?.bio || undefined,
+        weddingDate: profile?.wedding_date || undefined,
+        partner: profile?.partner || profile?.partner_name || undefined,
+        avatar: profile?.avatar_url || profile?.headshot_url || undefined,
         favoriteScripts: favorites?.map(f => f.script_id) || [],
         purchasedScripts: purchases?.map(p => p.script_id) || [],
       }
@@ -191,7 +256,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Still set a basic user object so the app works
       setUser({
         id: supabaseUser.id,
-        name: supabaseUser.email?.split('@')[0] || 'User',
+        name: getProfileName(null, supabaseUser),
         email: supabaseUser.email!,
         userType: 'guest',
         favoriteScripts: [],
@@ -249,6 +314,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         options: {
           data: {
             name: userData.name,
+            full_name: userData.name,
             user_type: userData.userType,
             location: userData.location,
             bio: userData.bio,
@@ -264,6 +330,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       if (data.user) {
+        const [city, ...stateParts] = (userData.location || '').split(',').map((part) => part.trim())
+
+        await supabase
+          .from('profiles')
+          .upsert(
+            {
+              user_id: data.user.id,
+              full_name: userData.name,
+              email: userData.email,
+              user_type: userData.userType,
+              location: userData.location || null,
+              city: city || null,
+              state: stateParts.join(', ') || null,
+              bio: userData.bio || null,
+              wedding_date: userData.weddingDate || null,
+              partner_name: userData.partner || null,
+            },
+            { onConflict: 'user_id' }
+          )
+
         await loadUserData(data.user)
         return true
       }
@@ -283,15 +369,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await supabase
         .from('profiles')
         .update({
-          name: userData.name,
+          full_name: userData.name,
           user_type: userData.userType,
           location: userData.location,
           bio: userData.bio,
           wedding_date: userData.weddingDate,
-          partner: userData.partner,
-          avatar_url: userData.avatar,
+          partner_name: userData.partner,
+          headshot_url: userData.avatar,
         })
-        .eq('id', user.id)
+        .eq('user_id', user.id)
 
       // Update local state
       setUser({ ...user, ...userData })

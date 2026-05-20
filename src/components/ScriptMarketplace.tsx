@@ -21,6 +21,7 @@ import { UserProfile } from '@/components/UserProfile'
 import { ScriptAuthor } from '@/components/ScriptAuthor'
 import { UserShowcase } from '@/components/UserShowcase'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { LEGAL_POLICY_LINKS } from '@/lib/legal-policies'
 
 // TypeScript interfaces
 interface Script {
@@ -453,7 +454,8 @@ const categories = {
     'Secular': 'Non-Religious',
     'Cultural': 'Cultural',
     'Memorial': 'Memorial/Celebration of Life',
-    'Military': 'Military'
+    'Military': 'Military',
+    'Other': 'Other'
   },
   es: {
     'All': 'Todas las Categorías',
@@ -465,7 +467,8 @@ const categories = {
     'Secular': 'No Religiosa',
     'Cultural': 'Cultural',
     'Memorial': 'Memorial/Celebración de Vida',
-    'Military': 'Militar'
+    'Military': 'Militar',
+    'Other': 'Otro'
   }
 }
 
@@ -478,7 +481,8 @@ const ceremonyTypes = {
     'Celebration of Life': 'Celebration of Life',
     'Vow Renewal': 'Vow Renewals',
     'Baptism': 'Baptisms',
-    'Memorial': 'Memorial Services'
+    'Memorial': 'Memorial Services',
+    'Other': 'Other'
   },
   es: {
     'All': 'Todas las Ceremonias',
@@ -488,12 +492,23 @@ const ceremonyTypes = {
     'Celebration of Life': 'Celebración de Vida',
     'Vow Renewal': 'Renovación de Votos',
     'Baptism': 'Bautizos',
-    'Memorial': 'Servicios Memoriales'
+    'Memorial': 'Servicios Memoriales',
+    'Other': 'Otro'
   }
 }
 
 // Language options
-const availableLanguages = ['English', 'Spanish', 'Punjabi', 'Hindi', 'French', 'Chinese']
+const availableLanguages = ['English', 'Spanish', 'Punjabi', 'Hindi', 'French', 'Chinese', 'Other']
+
+const getPreviewExcerpt = (content: string) => {
+  const paragraphs = content
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+
+  const excerpt = paragraphs.slice(0, 2).join('\n\n') || content.slice(0, 500)
+  return `${excerpt.slice(0, 700)}\n\n[Purchase this script to unlock the full ceremony script.]`
+}
 
 export function ScriptMarketplace() {
   const [purchaseStatus, setPurchaseStatus] = useState<'success' | 'cancelled' | null>(null)
@@ -556,7 +571,7 @@ function ScriptMarketplaceContent({ purchaseStatus, setPurchaseStatus }: { purch
   const [currentTab, setCurrentTab] = useState('all')
   const [previewScript, setPreviewScript] = useState<Script | null>(null)
   const { getCartCount, setIsOpen, addToCart } = useCart()
-  const { toggleFavorite, isFavorited, user } = useAuth()
+  const { toggleFavorite, isFavorited, isPurchased, user } = useAuth()
   // Auto-dismiss success/cancelled message
   useEffect(() => {
     if (purchaseStatus) {
@@ -1069,6 +1084,16 @@ function ScriptMarketplaceContent({ purchaseStatus, setPurchaseStatus }: { purch
         </div>
       </div>
 
+      <footer className="border-t border-blue-100 bg-white">
+        <div className="mx-auto flex max-w-7xl flex-wrap gap-x-5 gap-y-2 px-4 py-5 text-sm text-gray-600">
+          {LEGAL_POLICY_LINKS.map((link) => (
+            <a key={link.slug} href={link.href} className="hover:text-blue-700 hover:underline">
+              {link.title}
+            </a>
+          ))}
+        </div>
+      </footer>
+
       {/* Script Preview Dialog */}
       <Dialog open={!!previewScript} onOpenChange={(open) => !open && setPreviewScript(null)}>
         <DialogContent className="max-w-3xl max-h-[80vh]">
@@ -1090,9 +1115,48 @@ function ScriptMarketplaceContent({ purchaseStatus, setPurchaseStatus }: { purch
                   <Separator />
                   <div>
                     <h3 className="font-semibold mb-2">Script Preview</h3>
-                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                      <pre className="whitespace-pre-wrap font-serif text-sm leading-relaxed text-gray-700">
-                        {previewScript.previewContent}
+                    <div
+                      className={`relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-6 ${
+                        isPurchased(previewScript.id) ? '' : 'select-none'
+                      }`}
+                      onCopy={(event) => {
+                        if (!isPurchased(previewScript.id)) event.preventDefault()
+                      }}
+                      onCut={(event) => {
+                        if (!isPurchased(previewScript.id)) event.preventDefault()
+                      }}
+                      onContextMenu={(event) => {
+                        if (!isPurchased(previewScript.id)) event.preventDefault()
+                      }}
+                      onKeyDown={(event) => {
+                        if (isPurchased(previewScript.id)) return
+                        const key = event.key.toLowerCase()
+                        if ((event.ctrlKey || event.metaKey) && ['a', 'c', 'x'].includes(key)) {
+                          event.preventDefault()
+                        }
+                      }}
+                      tabIndex={isPurchased(previewScript.id) ? undefined : 0}
+                    >
+                      {!isPurchased(previewScript.id) && (
+                        <>
+                          <div className="pointer-events-none absolute inset-0 z-10 opacity-10">
+                            <div className="grid h-full grid-cols-2 gap-6 p-4 text-center text-lg font-bold uppercase tracking-widest text-gray-700">
+                              {Array.from({ length: 10 }).map((_, index) => (
+                                <span key={index} className="-rotate-12 self-center">
+                                  Preview Only
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="pointer-events-none absolute bottom-3 right-3 z-20 rounded bg-white/85 px-3 py-1 text-xs font-medium text-gray-600 shadow-sm">
+                            Protected preview
+                          </div>
+                        </>
+                      )}
+                      <pre className="relative z-0 whitespace-pre-wrap font-serif text-sm leading-relaxed text-gray-700">
+                        {isPurchased(previewScript.id)
+                          ? previewScript.previewContent
+                          : getPreviewExcerpt(previewScript.previewContent)}
                       </pre>
                     </div>
                   </div>

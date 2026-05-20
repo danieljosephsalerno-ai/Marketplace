@@ -1,4 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr'
+import { getBrowserCookieOptions } from './shared-auth'
 
 export function createClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -10,9 +11,14 @@ export function createClient() {
     // Use placeholder values that will fail gracefully at runtime
     return createBrowserClient(
       'https://placeholder.supabase.co',
-      'placeholder-key'
+      'placeholder-key',
+      {
+        cookieOptions: getBrowserCookieOptions(),
+      }
     )
   }
 
-  return createBrowserClient(supabaseUrl, supabaseAnonKey)
+  return createBrowserClient(supabaseUrl, supabaseAnonKey, {
+    cookieOptions: getBrowserCookieOptions(),
+  })
 }

@@ -40,6 +40,7 @@ export function AuthDialog({ open, onOpenChange, language }: AuthDialogProps) {
   const [signupLocation, setSignupLocation] = useState('')
   const [signupPartner, setSignupPartner] = useState('')
   const [signupWeddingDate, setSignupWeddingDate] = useState('')
+  const [legalAccepted, setLegalAccepted] = useState(false)
 
   const t = language === 'en' ? {
     login: 'Login',
@@ -155,6 +156,12 @@ export function AuthDialog({ open, onOpenChange, language }: AuthDialogProps) {
     setIsLoading(true)
 
     try {
+      if (!legalAccepted) {
+        setError('Please accept the Terms of Service and Privacy Policy to create an account.')
+        setIsLoading(false)
+        return
+      }
+
       const success = await signup({
         name: signupName,
         email: signupEmail,
@@ -175,6 +182,7 @@ export function AuthDialog({ open, onOpenChange, language }: AuthDialogProps) {
         setSignupLocation('')
         setSignupPartner('')
         setSignupWeddingDate('')
+        setLegalAccepted(false)
       } else {
         setError(t.signupError)
       }
@@ -456,6 +464,27 @@ export function AuthDialog({ open, onOpenChange, language }: AuthDialogProps) {
                   {error}
                 </div>
               )}
+
+              <label className="flex items-start gap-2 rounded-md border border-blue-100 bg-blue-50 p-3 text-xs text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={legalAccepted}
+                  onChange={(event) => setLegalAccepted(event.target.checked)}
+                  className="mt-1"
+                  required
+                />
+                <span>
+                  I agree to the{" "}
+                  <a href="/legal/terms-of-service" target="_blank" rel="noreferrer" className="text-blue-700 underline">
+                    Terms of Service
+                  </a>{" "}
+                  and{" "}
+                  <a href="/legal/privacy-policy" target="_blank" rel="noreferrer" className="text-blue-700 underline">
+                    Privacy Policy
+                  </a>
+                  .
+                </span>
+              </label>
 
               <Button
                 type="submit"

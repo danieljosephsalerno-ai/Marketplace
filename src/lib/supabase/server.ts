@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { getServerCookieOptions } from './shared-auth'
 
 export async function createClient() {
   const cookieStore = await cookies()
@@ -11,6 +12,7 @@ export async function createClient() {
   const key = supabaseAnonKey || 'placeholder-key'
 
   return createServerClient(url, key, {
+    cookieOptions: getServerCookieOptions(process.env.NEXT_PUBLIC_SITE_HOST),
     cookies: {
       getAll() {
         return cookieStore.getAll()

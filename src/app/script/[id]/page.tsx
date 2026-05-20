@@ -111,6 +111,16 @@ const scripts = [
   }
 ]
 
+const getPreviewExcerpt = (content: string) => {
+  const paragraphs = content
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+
+  const excerpt = paragraphs.slice(0, 2).join('\n\n') || content.slice(0, 500)
+  return `${excerpt.slice(0, 700)}\n\n[Purchase this script to unlock the full ceremony script.]`
+}
+
 export default function ScriptDetailPage() {
   const router = useRouter()
   const params = useParams()
@@ -272,9 +282,46 @@ export default function ScriptDetailPage() {
                       </Badge>
                     )}
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                    <pre className="whitespace-pre-wrap font-serif text-sm leading-relaxed">
-                      {purchased ? script.previewContent : script.previewContent.substring(0, 150) + '...\n\n[Purchase this script to view the full content]'}
+                  <div
+                    className={`relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-6 ${
+                      purchased ? '' : 'select-none'
+                    }`}
+                    onCopy={(event) => {
+                      if (!purchased) event.preventDefault()
+                    }}
+                    onCut={(event) => {
+                      if (!purchased) event.preventDefault()
+                    }}
+                    onContextMenu={(event) => {
+                      if (!purchased) event.preventDefault()
+                    }}
+                    onKeyDown={(event) => {
+                      if (purchased) return
+                      const key = event.key.toLowerCase()
+                      if ((event.ctrlKey || event.metaKey) && ['a', 'c', 'x'].includes(key)) {
+                        event.preventDefault()
+                      }
+                    }}
+                    tabIndex={purchased ? undefined : 0}
+                  >
+                    {!purchased && (
+                      <>
+                        <div className="pointer-events-none absolute inset-0 z-10 opacity-10">
+                          <div className="grid h-full grid-cols-2 gap-6 p-4 text-center text-lg font-bold uppercase tracking-widest text-gray-700">
+                            {Array.from({ length: 10 }).map((_, index) => (
+                              <span key={index} className="-rotate-12 self-center">
+                                Preview Only
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="pointer-events-none absolute bottom-3 right-3 z-20 rounded bg-white/85 px-3 py-1 text-xs font-medium text-gray-600 shadow-sm">
+                          Protected preview
+                        </div>
+                      </>
+                    )}
+                    <pre className="relative z-0 whitespace-pre-wrap font-serif text-sm leading-relaxed">
+                      {purchased ? script.previewContent : getPreviewExcerpt(script.previewContent)}
                     </pre>
                   </div>
                 </div>

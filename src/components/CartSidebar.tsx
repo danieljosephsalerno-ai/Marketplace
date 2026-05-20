@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Minus, Plus, ShoppingCart, Trash2, CreditCard, Check, Loader2 } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
-import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
@@ -36,9 +35,9 @@ export function CartSidebar({ language }: CartSidebarProps) {
     isOpen,
     setIsOpen
   } = useCart()
-  const { addPurchase, isAuthenticated, user } = useAuth()
   const [showSuccessDialog, setShowSuccessDialog] = useState(false)
   const [isCheckingOut, setIsCheckingOut] = useState(false)
+  const [buyerLicenseAccepted, setBuyerLicenseAccepted] = useState(false)
 
   // Handle successful payment redirect
   useEffect(() => {
@@ -65,9 +64,8 @@ export function CartSidebar({ language }: CartSidebarProps) {
     items: 'items',
     by: 'by',
     purchaseSuccess: 'Purchase Successful!',
-    purchaseMessage: 'Your scripts have been added to your library.',
-    continueShopping: 'Continue Shopping',
-    loginRequired: 'Please login to complete your purchase'
+    purchaseMessage: 'Your payment was completed. Check the email entered in Stripe Checkout for your receipt and script delivery details.',
+    continueShopping: 'Continue Shopping'
   } : {
     cart: 'Carrito de Compras',
     empty: 'Tu carrito está vacío',
@@ -88,8 +86,10 @@ export function CartSidebar({ language }: CartSidebarProps) {
   }
 
   const handleCheckout = async () => {
-    if (!isAuthenticated || !user) {
-      alert(t.loginRequired)
+    if (!buyerLicenseAccepted) {
+      alert(language === 'en'
+        ? 'Please accept the Buyer License Agreement and Refund Policy before checkout.'
+        : 'Acepta el acuerdo de licencia del comprador y la politica de reembolso antes de pagar.')
       return
     }
 
@@ -109,7 +109,7 @@ export function CartSidebar({ language }: CartSidebarProps) {
             price: item.price,
             quantity: item.quantity,
           })),
-          userId: user.id,
+          buyerLicenseAccepted,
         }),
       })
 
@@ -246,6 +246,20 @@ export function CartSidebar({ language }: CartSidebarProps) {
                 </div>
 
                 <div className="space-y-2">
+                  <label className="flex items-start gap-2 rounded-md border border-blue-100 bg-blue-50 p-3 text-xs text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={buyerLicenseAccepted}
+                      onChange={(event) => setBuyerLicenseAccepted(event.target.checked)}
+                      className="mt-1"
+                    />
+                    <span>
+                      I understand I am receiving a license to use, edit, customize, print, and perform the script. I agree not to resell, redistribute, upload, publish, or claim the original script as my own. I also agree to the{" "}
+                      <a href="/legal/buyer-license-agreement" target="_blank" rel="noreferrer" className="text-blue-700 underline">Buyer License Agreement</a>
+                      {" "}and{" "}
+                      <a href="/legal/refund-policy" target="_blank" rel="noreferrer" className="text-blue-700 underline">Refund Policy</a>.
+                    </span>
+                  </label>
                   <Button
                     onClick={handleCheckout}
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
