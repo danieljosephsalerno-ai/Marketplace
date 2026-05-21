@@ -500,14 +500,31 @@ const ceremonyTypes = {
 // Language options
 const availableLanguages = ['English', 'Spanish', 'Punjabi', 'Hindi', 'French', 'Chinese', 'Other']
 
-const getPreviewExcerpt = (content: string) => {
-  const paragraphs = content
-    .split(/\n\s*\n/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean)
+const PREVIEW_WORD_LIMIT = 380
 
-  const excerpt = paragraphs.slice(0, 2).join('\n\n') || content.slice(0, 500)
-  return `${excerpt.slice(0, 700)}\n\n[Purchase this script to unlock the full ceremony script.]`
+const getPreviewExcerpt = (content: string) => {
+  const trimmedContent = content.trim()
+  const words = trimmedContent.match(/\S+/g) || []
+
+  if (words.length <= PREVIEW_WORD_LIMIT) {
+    return `${trimmedContent}\n\n[Purchase this script to unlock the full ceremony script.]`
+  }
+
+  let wordCount = 0
+  let excerptEndIndex = trimmedContent.length
+  const wordMatcher = /\S+/g
+  let match = wordMatcher.exec(trimmedContent)
+
+  while (match) {
+    wordCount += 1
+    if (wordCount === PREVIEW_WORD_LIMIT) {
+      excerptEndIndex = match.index + match[0].length
+      break
+    }
+    match = wordMatcher.exec(trimmedContent)
+  }
+
+  return `${trimmedContent.slice(0, excerptEndIndex).trimEnd()}...\n\n[Purchase this script to unlock the full ceremony script.]`
 }
 
 export function ScriptMarketplace() {
@@ -1116,7 +1133,7 @@ function ScriptMarketplaceContent({ purchaseStatus, setPurchaseStatus }: { purch
                   <div>
                     <h3 className="font-semibold mb-2">Script Preview</h3>
                     <div
-                      className={`relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-6 ${
+                      className={`relative max-h-[44vh] overflow-y-auto rounded-lg border border-gray-200 bg-gray-50 p-6 pr-8 ${
                         isPurchased(previewScript.id) ? '' : 'select-none'
                       }`}
                       onCopy={(event) => {
