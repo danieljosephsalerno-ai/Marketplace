@@ -1250,7 +1250,7 @@ function ScriptCard({
   const purchased = isPurchased(script.id)
 
   return (
-    <Card className="group hover:shadow-lg transition-shadow duration-200 cursor-pointer relative" onClick={onPreview}>
+    <Card className="group relative flex h-full cursor-pointer flex-col transition-shadow duration-200 hover:shadow-lg" onClick={onPreview}>
       {purchased && (
         <div className="absolute top-2 right-2 z-10">
           <Badge className="success text-xs">
@@ -1258,7 +1258,7 @@ function ScriptCard({
           </Badge>
         </div>
       )}
-      <CardHeader>
+      <CardHeader className="min-h-[132px]">
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <CardTitle className="text-lg line-clamp-2 group-hover:text-primary transition-colors">
@@ -1298,8 +1298,8 @@ function ScriptCard({
         </div>
       </CardHeader>
 
-      <CardContent>
-        <p className="text-gray-600 text-sm line-clamp-3 mb-4">
+      <CardContent className="flex flex-1 flex-col">
+        <p className="text-gray-600 text-sm line-clamp-3 mb-4 min-h-[60px]">
           {script.description}
         </p>
 
@@ -1325,13 +1325,13 @@ function ScriptCard({
         </div>
       </CardContent>
 
-      <CardFooter className="flex items-center justify-between">
+      <CardFooter className="mt-auto flex items-center justify-between gap-3">
         <div className="text-2xl font-bold text-gray-900">
           ${script.price}
         </div>
         <Button
           onClick={handleAddToCart}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground"
+          className="w-[104px] justify-center bg-primary text-primary-foreground hover:bg-primary/90"
         >
           {t.addToCart}
         </Button>
