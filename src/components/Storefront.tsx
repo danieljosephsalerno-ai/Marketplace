@@ -29,7 +29,6 @@ type StoreScript = {
 export function Storefront() {
   const params = useParams<{ sellerId: string }>()
   const sellerId = params.sellerId
-  const supabase = createClient()
   const { addToCart, getCartCount, setIsOpen } = useCart()
   const [scripts, setScripts] = useState<StoreScript[]>([])
   const [sellerName, setSellerName] = useState('Officiant Store')
@@ -40,16 +39,18 @@ export function Storefront() {
     async function loadStore() {
       setIsLoading(true)
       setError('')
+      const supabase = createClient()
 
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('full_name, first_name, last_name, business_name')
+        .select('full_name, business_name')
         .eq('user_id', sellerId)
         .maybeSingle()
 
       if (profile) {
-        const fullName = profile.full_name || [profile.first_name, profile.last_name].filter(Boolean).join(' ')
-        setSellerName(profile.business_name || fullName || 'Officiant Store')
+        setSellerName(profile.business_name || profile.full_name || 'Officiant Store')
+      } else if (profileError && profileError.code !== 'PGRST116') {
+        console.log('Unable to load seller profile:', profileError.message)
       }
 
       const { data, error: scriptsError } = await supabase
